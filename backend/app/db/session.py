@@ -1,4 +1,2 @@
-"""Database session configuration"""
+from sqlalchemy import create_engine
 
-# TODO: SQLAlchemy engine 생성
-# TODO: SessionLocal 생성 (create_engine + sessionmaker)

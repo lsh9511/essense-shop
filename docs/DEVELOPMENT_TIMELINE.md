@@ -10,7 +10,8 @@
 | **MVP** | 5주 | 기본 이커머스 기능 구현 | 70-100시간 |
 | **Phase 2** | 4주 | 고객 경험 개선 | 56-80시간 |
 | **Phase 3** | 4주 | 마케팅 및 분석 | 56-80시간 |
-| **총 기간** | **13주** | **약 3개월** | **182-260시간** |
+| **Phase 4** | 3주 | 운영 판단 시스템 | 42-60시간 |
+| **총 기간** | **16주** | **약 4개월** | **224-320시간** |
 
 ---
 
@@ -1024,6 +1025,304 @@ npm install axios react-router-dom @tanstack/react-query tailwindcss
 - AWS/GCP 배포
 - 도메인 연결
 - HTTPS 설정
+
+---
+
+## Phase 4 (Week 14-16): 운영 판단 시스템
+
+> 상세 문서: `docs/OPERATIONS_SYSTEM.md` 참고
+
+### Week 14: 데이터 모델 및 상품 입력 자동화
+
+#### Day 1-2: 데이터 모델 설계 (6-8시간)
+
+**소싱 판단 테이블 생성**:
+```python
+# models/sourcing_decision.py
+from sqlalchemy import Column, Integer, String, Numeric, DateTime, Text
+from app.db.base import Base
+
+class SourcingDecision(Base):
+    __tablename__ = "sourcing_decisions"
+
+    id = Column(Integer, primary_key=True)
+    product_id = Column(Integer, ForeignKey("products.id"))
+    decision_type = Column(String(20))  # 직매입/위탁
+    purchase_score = Column(Integer)  # 0-100
+    estimated_monthly_sales = Column(Integer)
+    margin_rate = Column(Numeric(5, 2))
+    inventory_turnover_days = Column(Integer)
+    return_rate = Column(Numeric(5, 2))
+    decision_date = Column(DateTime, server_default=func.now())
+    notes = Column(Text)
+```
+
+**Alembic 마이그레이션**:
+```bash
+alembic revision --autogenerate -m "Add sourcing_decisions table"
+alembic upgrade head
+```
+
+---
+
+#### Day 3-5: 상품 일괄 등록 기능 (10-12시간)
+
+**CSV 파서 구현**:
+```python
+# utils/csv_parser.py
+import pandas as pd
+
+def parse_product_csv(file_path: str) -> list[dict]:
+    """CSV 파일을 파싱하여 상품 데이터 리스트 반환"""
+    df = pd.read_csv(file_path)
+
+    # 필수 컬럼 검증
+    required_cols = ['브랜드명', '상품명', '원가', '판매가', 'SKU']
+    for col in required_cols:
+        if col not in df.columns:
+            raise ValueError(f"필수 컬럼 누락: {col}")
+
+    # dict 리스트로 변환
+    products = df.to_dict('records')
+    return products
+```
+
+**일괄 등록 API**:
+```python
+# api/v1/endpoints/admin/products.py
+@router.post("/bulk-import")
+async def bulk_import_products(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_admin)
+):
+    """상품 일괄 등록"""
+    # CSV 파일 저장
+    file_path = f"/tmp/{file.filename}"
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+
+    # 파싱 및 등록
+    products = parse_product_csv(file_path)
+    success = 0
+    errors = []
+
+    for idx, product_data in enumerate(products):
+        try:
+            # 중복 체크
+            existing = db.query(Product).filter(
+                Product.sku == product_data['SKU']
+            ).first()
+
+            if existing:
+                errors.append({"row": idx+1, "reason": "중복 SKU"})
+                continue
+
+            # 상품 생성
+            product = Product(**product_data)
+            db.add(product)
+            success += 1
+
+        except Exception as e:
+            errors.append({"row": idx+1, "reason": str(e)})
+
+    db.commit()
+
+    return {
+        "total": len(products),
+        "imported": success,
+        "failed": len(errors),
+        "errors": errors
+    }
+```
+
+---
+
+#### Day 6-7: 테스트 및 UI (6-8시간)
+
+**테스트**:
+- 100개 상품 테스트 데이터 업로드
+- 에러 핸들링 개선
+
+**어드민 UI**:
+- 파일 업로드 폼
+- 진행 상태 표시
+- 결과 리포트 표시
+
+---
+
+### Week 15: 소싱 판단 알고리즘
+
+#### Day 1-3: 판단 알고리즘 구현 (10-12시간)
+
+**점수 계산 서비스**:
+```python
+# services/sourcing_service.py
+class SourcingService:
+    def calculate_purchase_score(self, product_data: dict) -> int:
+        """직매입 점수 계산 (0-100)"""
+        score = 0
+
+        # 예상 판매량 (30점)
+        if product_data['estimated_monthly_sales'] >= 10:
+            score += 30
+        elif product_data['estimated_monthly_sales'] >= 5:
+            score += 15
+
+        # 마진율 (25점)
+        margin_rate = product_data['margin_rate']
+        if margin_rate >= 0.45:
+            score += 25
+        elif margin_rate >= 0.35:
+            score += 15
+
+        # 재고 회전율 (20점)
+        if product_data['inventory_turnover_days'] <= 30:
+            score += 20
+        elif product_data['inventory_turnover_days'] <= 60:
+            score += 10
+
+        # 반품률 (15점)
+        if product_data['return_rate'] <= 0.05:
+            score += 15
+        elif product_data['return_rate'] <= 0.10:
+            score += 7
+
+        # 브랜드 신뢰도 (10점)
+        if product_data.get('brand_verified'):
+            score += 10
+
+        return score
+
+    def get_recommendation(self, score: int) -> dict:
+        """추천 결과 생성"""
+        if score >= 70:
+            return {
+                "decision": "직매입 추천",
+                "level": "high",
+                "color": "green"
+            }
+        elif score >= 30:
+            return {
+                "decision": "신중 검토",
+                "level": "medium",
+                "color": "yellow"
+            }
+        else:
+            return {
+                "decision": "위탁 추천",
+                "level": "low",
+                "color": "red"
+            }
+```
+
+---
+
+#### Day 4-7: API 및 UI (10-12시간)
+
+**소싱 분석 API**:
+```python
+@router.post("/sourcing/analyze")
+def analyze_sourcing(
+    request: SourcingAnalysisRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_admin)
+):
+    """소싱 방식 판단"""
+    service = SourcingService()
+
+    score = service.calculate_purchase_score(request.dict())
+    recommendation = service.get_recommendation(score)
+
+    # 판단 기록 저장
+    decision = SourcingDecision(
+        product_id=request.product_id,
+        decision_type=recommendation['decision'],
+        purchase_score=score,
+        **request.dict()
+    )
+    db.add(decision)
+    db.commit()
+
+    return {
+        "purchase_score": score,
+        "recommendation": recommendation['decision'],
+        "reasons": service.get_reasons(request.dict(), score),
+        "estimated_profit": service.calculate_profit(request.dict())
+    }
+```
+
+---
+
+### Week 16: 운영 리포트
+
+#### Day 1-3: 리포트 생성 엔진 (10-12시간)
+
+**수익성 분석 리포트**:
+```python
+# services/report_service.py
+class ReportService:
+    def generate_profitability_report(
+        self,
+        start_date: date,
+        end_date: date,
+        db: Session
+    ) -> dict:
+        """수익성 분석 리포트"""
+
+        # 기간 내 판매 데이터
+        orders = db.query(Order).filter(
+            Order.created_at >= start_date,
+            Order.created_at <= end_date
+        ).all()
+
+        # 상품별 집계
+        product_stats = {}
+        for order in orders:
+            for item in order.order_items:
+                if item.product_id not in product_stats:
+                    product_stats[item.product_id] = {
+                        'sales': 0,
+                        'revenue': 0,
+                        'profit': 0,
+                        'quantity': 0
+                    }
+
+                stats = product_stats[item.product_id]
+                stats['quantity'] += item.quantity
+                stats['revenue'] += item.price * item.quantity
+                stats['profit'] += (item.price - item.product.cost) * item.quantity
+
+        return {
+            'period': {'start': start_date, 'end': end_date},
+            'total_revenue': sum(s['revenue'] for s in product_stats.values()),
+            'total_profit': sum(s['profit'] for s in product_stats.values()),
+            'products': product_stats
+        }
+```
+
+---
+
+#### Day 4-7: PDF/Excel 출력 및 대시보드 (10-12시간)
+
+**PDF 생성**:
+```python
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+
+def export_to_pdf(report_data: dict, output_path: str):
+    """리포트를 PDF로 출력"""
+    c = canvas.Canvas(output_path, pagesize=A4)
+    c.drawString(100, 800, f"수익성 분석 리포트")
+    c.drawString(100, 780, f"기간: {report_data['period']['start']} ~ {report_data['period']['end']}")
+    # ... 리포트 내용 작성
+    c.save()
+```
+
+**대시보드 통합**:
+- 리포트 목록 조회
+- 자동 리포트 스케줄링 (Celery)
+- 다운로드 링크 생성
 
 ---
 
