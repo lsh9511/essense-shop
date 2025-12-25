@@ -1,42 +1,33 @@
-"""FastAPI application entry point"""
-
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
+from app.db import init_db, close_db
 
-from app.core.config import settings
-from app.api.v1.router import api_router
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    print("Database connected")
+    yield
+    await close_db()
+    print("Database disconnected")
 
-app = FastAPI(
-    title=settings.APP_NAME,
-    description="30대를 위한 미니멀 프리미엄 편집샵",
-    version=settings.APP_VERSION,
-    debug=settings.DEBUG,
+# FastAPI 앱 생성
+app= FastAPI(
+    title="ESSENCE API",
+    description="프리미엄 편집샵",
+    version="1.0.0",
+    lifespan=lifespan
 )
-
-# CORS 설정
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# API 라우터 등록
-app.include_router(api_router, prefix="/api/v1")
-
 
 @app.get("/")
 async def root():
-    """Health check"""
     return {
-        "message": f"{settings.APP_NAME} API",
-        "version": settings.APP_VERSION,
-        "status": "healthy"
+        "message":"ESSENCE API is running",
+        "status":"healthy"
     }
-
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
-    return {"status": "ok"}
+    return{
+        "status":"ok",
+        "database":"connected"
+    }

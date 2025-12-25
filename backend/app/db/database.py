@@ -17,12 +17,6 @@ TORTOISE_ORM = {
         "models": {
             "models": [
                 "app.models.user",
-                "app.models.brand",
-                "app.models.product",
-                "app.models.order",
-                "app.models.cart",
-                "app.models.review",
-                "app.models.coupon",
                 "aerich.models"
             ],
             "default_connection": "default",
