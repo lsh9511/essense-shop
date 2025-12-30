@@ -7,8 +7,9 @@ from app.utils.jwt import create_access_token
 # 라우터 생성
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
+
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
-async def register(user_data: UserRegister):
+async def register(user_data: UserRegister) -> User:
     """
     회원가입
     - 이메일 중복 체크
@@ -20,16 +21,14 @@ async def register(user_data: UserRegister):
     existing_user = await User.filter(email=user_data.email).first()
     if existing_user:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="이미 사용 중인 이메일입니다."
+            status_code=status.HTTP_400_BAD_REQUEST, detail="이미 사용 중인 이메일입니다."
         )
 
     # 2. 전화번호 중복 체크
     existing_phone = await User.filter(phone=user_data.phone).first()
     if existing_phone:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="이미 사용 중인 전화번호입니다."
+            status_code=status.HTTP_400_BAD_REQUEST, detail="이미 사용 중인 전화번호입니다."
         )
     # 3. 비밀번호 해싱
     hashed_pw = hash_password(user_data.password)
@@ -46,8 +45,9 @@ async def register(user_data: UserRegister):
 
     return user
 
+
 @router.post("/login", response_model=TokenResponse)
-async def login(login_data: UserLogin):
+async def login(login_data: UserLogin) -> TokenResponse:
     """
     로그인
     - 이메일/비밀번호 검증
@@ -62,28 +62,19 @@ async def login(login_data: UserLogin):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="이메일 또는 비밀번호가 일치하지 않습니다.",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         )
 
     # 3. 비활성화된 사용자 체크
     if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="비활성화된 계정입니다."
-        )
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="비활성화된 계정입니다.")
 
     # 4. JWT 토큰 생성
     access_token = create_access_token(
-        data={
-            "user_id": user.id,
-            "uuid": str(user.uuid),
-            "role": user.role.value
-        }
+        data={"user_id": user.id, "uuid": str(user.uuid), "role": user.role.value}
     )
 
     # 5. 응답
     return TokenResponse(
-        access_token=access_token,
-        token_type="bearer",
-        user=UserResponse.from_orm(user)
+        access_token=access_token, token_type="bearer", user=UserResponse.from_orm(user)
     )

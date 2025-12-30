@@ -1,9 +1,10 @@
 from passlib.context import CryptContext
 
-#bcrypt 해싱 컨텍스트 생성
+# bcrypt 해싱 컨텍스트 생성
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def hash_password(password:str) -> str:
+
+def hash_password(password: str) -> str:
     """
     비밀번호를 bcrypt로 해싱
 
@@ -13,7 +14,8 @@ def hash_password(password:str) -> str:
     Returns:
         해싱된 비밀번호 문자열
     """
-    return pwd_context.hash(password)
+    return str(pwd_context.hash(password))
+
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
@@ -26,4 +28,4 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     Returns:
         일치하면 True, 아니면 False
     """
-    return pwd_context.verify(plain_password, hashed_password)
+    return bool(pwd_context.verify(plain_password, hashed_password))

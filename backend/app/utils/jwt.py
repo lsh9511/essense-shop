@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from typing import Any
 from jose import jwt, JWTError
 import os
 from dotenv import load_dotenv
@@ -9,7 +10,8 @@ SECRET_KEY = os.getenv("SECRET_KEY", "default-secret-key")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
-def create_access_token(data: dict) -> str:
+
+def create_access_token(data: dict[str, Any]) -> str:
     """
     JWT Access Token 생성
 
@@ -27,10 +29,11 @@ def create_access_token(data: dict) -> str:
     to_encode.update({"exp": expire})
 
     # JWT 인코딩
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt: str = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def decode_access_token(token: str) -> dict | None:
+
+def decode_access_token(token: str) -> dict[str, Any] | None:
     """
     JWT 토큰 디코딩 및 검증
 
@@ -40,7 +43,7 @@ def decode_access_token(token: str) -> dict | None:
         성공 시 payload dict, 실패 시 None
     """
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload: dict[str, Any] = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError:
         return None
