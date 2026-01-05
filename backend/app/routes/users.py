@@ -6,10 +6,9 @@ from app.utils.dependencies import get_current_user, get_current_admin
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
-@router.get("/me",response_model=UserResponse)
-async def get_my_profile(
-        current_user: Annotated[User,Depends(get_current_user)]
-) -> User:
+
+@router.get("/me", response_model=UserResponse)
+async def get_my_profile(current_user: Annotated[User, Depends(get_current_user)]) -> User:
     """
     내 프로필 조회
 
@@ -18,10 +17,9 @@ async def get_my_profile(
     """
     return current_user
 
+
 @router.get("/", reponse_model=list[UserResponse])
-async def get_all_users(
-        current_user: Annotated[User,Depends(get_current_admin)]
-)->list[User]:
+async def get_all_users(current_user: Annotated[User, Depends(get_current_admin)]) -> list[User]:
     """
     전체 사용자 조회 (관리자 전용)
 
