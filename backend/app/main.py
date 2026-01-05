@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.db import init_db, close_db
-from app.routes import auth
+from app.routes import auth, users
 
 
 @asynccontextmanager
@@ -22,6 +22,7 @@ app = FastAPI(
 
 # 라우터 등록
 app.include_router(auth.router)
+app.include_router(users.router)
 
 
 @app.get("/")
