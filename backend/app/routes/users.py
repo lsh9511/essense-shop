@@ -18,7 +18,7 @@ async def get_my_profile(current_user: Annotated[User, Depends(get_current_user)
     return current_user
 
 
-@router.get("/", reponse_model=list[UserResponse])
+@router.get("/", response_model=list[UserResponse])
 async def get_all_users(current_user: Annotated[User, Depends(get_current_admin)]) -> list[User]:
     """
     전체 사용자 조회 (관리자 전용)
