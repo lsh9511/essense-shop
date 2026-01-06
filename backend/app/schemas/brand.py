@@ -16,7 +16,7 @@ class BrandCreate(BaseModel):
     contact_name: str | None = Field(None, max_length=50)
     contact_phone: str | None = Field(None, max_length=20)
     contact_email: EmailStr | None = None
-    commission_rate: Decimal = Field(default=Decimal("0.00"),ge=0, le=100)
+    commission_rate: Decimal = Field(default=Decimal("0.00"), ge=0, le=100)
 
 
 class BrandUpdate(BaseModel):
@@ -47,7 +47,7 @@ class BrandResponse(BaseModel):
     instagram: str | None
     contact_name: str | None
     contact_phone: str | None
-    contact_email : str | None
+    contact_email: str | None
     commission_rate: Decimal
     is_active: bool
     created_at: datetime
