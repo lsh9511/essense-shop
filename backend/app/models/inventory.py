@@ -1,4 +1,4 @@
-from tortoise import fields, models
+from tortoise import fields
 from tortoise.models import Model
 from typing import TYPE_CHECKING
 
@@ -13,7 +13,10 @@ class Inventory(Model):
 
     # 외래키: ProductOption과 1대1 관계
     product_option: fields.OneToOneRelation["ProductOption"] = fields.OneToOneField(
-        "models.ProductOption", related_name="inventory", on_delete=models.CASCADE, unique=True
+        "models.ProductOption",
+        related_name="inventory",
+        on_delete=fields.OnDelete.CASCADE,
+        unique=True,
     )
     quantity = fields.IntField(default=0)
     safe_stock = fields.IntField(default=5)
@@ -22,7 +25,7 @@ class Inventory(Model):
     class Meta:
         table = "inventory"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Stock: {self.quantity}"
 
     @property

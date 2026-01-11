@@ -13,7 +13,7 @@ class ProductOption(Model):
 
     # 외래키: Product와 관계
     product: fields.ForeignKeyRelation["Product"] = fields.ForeignKeyField(
-        "models.Product", related_name="options", on_delete=fields.CASCADE
+        "models.Product", related_name="options", on_delete=fields.OnDelete.CASCADE
     )
     size = fields.CharField(max_length=20)
     color = fields.CharField(max_length=50)
@@ -26,5 +26,5 @@ class ProductOption(Model):
         table = "product_options"
         unique_together = (("product", "size", "color"),)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.size} / {self.color}"
