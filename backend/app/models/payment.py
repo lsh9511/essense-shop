@@ -34,7 +34,7 @@ class Payment(Model):
 
     # 외래키: Order와 1:1 관계
     order: fields.OneToOneRelation["Order"] = fields.OneToOneField(
-        "models.Order", related_name="payment", on_delete=fields.OnDelete.RESTRICT, unique=True
+        "models.Order", related_name="payment", on_delete=fields.OnDelete.RESTRICT
     )
 
     # 결제 정보
@@ -51,7 +51,7 @@ class Payment(Model):
     refunded_at = fields.DatetimeField(null=True)
 
     # 실패 사유
-    failure_reasom = fields.TextField(null=True)
+    failure_reason = fields.TextField(null=True)
 
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
