@@ -24,5 +24,5 @@ __all__ = [
     "ShippingStatus",
     "OrderItem",
     "Cart",
-    "CartItem"
+    "CartItem",
 ]
