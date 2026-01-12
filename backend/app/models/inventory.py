@@ -13,9 +13,7 @@ class Inventory(Model):
 
     # 외래키: ProductOption과 1대1 관계
     product_option: fields.OneToOneRelation["ProductOption"] = fields.OneToOneField(
-        "models.ProductOption",
-        related_name="inventory",
-        on_delete=fields.OnDelete.CASCADE
+        "models.ProductOption", related_name="inventory", on_delete=fields.OnDelete.CASCADE
     )
     quantity = fields.IntField(default=0)
     safe_stock = fields.IntField(default=5)
