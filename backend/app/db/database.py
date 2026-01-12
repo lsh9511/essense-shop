@@ -29,6 +29,7 @@ TORTOISE_ORM = {
                 "app.models.coupon",
                 "app.models.return_request",
                 "app.models.notification",
+                "app.models.admin_log",
                 "aerich.models",
             ],
             "default_connection": "default",

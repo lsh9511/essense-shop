@@ -14,6 +14,7 @@ from .review import Review, ReviewImage, SizeSatisfaction
 from .coupon import Coupon, UserCoupon, DiscountType
 from .return_request import ReturnRequest, ReturnType, ReturnStatus
 from .notification import Notification, NotificationType
+from .admin_log import AdminLog, AdminAction
 
 __all__ = [
     "User",
@@ -48,4 +49,6 @@ __all__ = [
     "ReturnRequest",
     "Notification",
     "NotificationType",
+    "AdminLog",
+    "AdminAction",
 ]
