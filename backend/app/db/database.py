@@ -24,6 +24,8 @@ TORTOISE_ORM = {
                 "app.models.cart",
                 "app.models.payment",
                 "app.models.address",
+                "app.models.wishlist",
+                "app.models.review",
                 "aerich.models",
             ],
             "default_connection": "default",
