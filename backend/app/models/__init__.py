@@ -7,6 +7,7 @@ from .inventory import Inventory
 from .order import Order, OrderStatus, ShippingStatus
 from .order_item import OrderItem
 from .cart import Cart, CartItem
+from .payment import Payment, PaymentStatus, PaymentMethod
 
 __all__ = [
     "User",
@@ -25,4 +26,7 @@ __all__ = [
     "OrderItem",
     "Cart",
     "CartItem",
+    "Payment",
+    "PaymentStatus",
+    "PaymentMethod",
 ]
