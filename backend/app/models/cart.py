@@ -14,7 +14,7 @@ class Cart(Model):
 
     # 외래키 : User와 관계 (1:1)
     user: fields.ForeignKeyRelation["User"] = fields.ForeignKeyField(
-        "model.User", related_name="cart", on_delete=fields.OnDelete.CASCADE, unique=True
+        "models.User", related_name="cart", on_delete=fields.OnDelete.CASCADE, unique=True
     )
 
     # 타임스탬프

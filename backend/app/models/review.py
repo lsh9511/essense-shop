@@ -30,7 +30,7 @@ class Review(Model):
         "models.Product", related_name="reviews", on_delete=fields.OnDelete.CASCADE
     )
     order_item: fields.OneToOneRelation["OrderItem"] = fields.OneToOneField(
-        "models.OrderItem", related_name="review", on_delete=fields.OnDelete.CASCADE, unique=True
+        "models.OrderItem", related_name="review", on_delete=fields.OnDelete.CASCADE
     )
 
     # 리뷰 내용
