@@ -8,6 +8,7 @@ from .order import Order, OrderStatus, ShippingStatus
 from .order_item import OrderItem
 from .cart import Cart, CartItem
 from .payment import Payment, PaymentStatus, PaymentMethod
+from .address import Address
 
 __all__ = [
     "User",
@@ -29,4 +30,5 @@ __all__ = [
     "Payment",
     "PaymentStatus",
     "PaymentMethod",
+    "Address"
 ]
