@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .user import User
 
+
 class Address(Model):
     """배송지 모델"""
 

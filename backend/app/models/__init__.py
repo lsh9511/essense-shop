@@ -30,5 +30,5 @@ __all__ = [
     "Payment",
     "PaymentStatus",
     "PaymentMethod",
-    "Address"
+    "Address",
 ]
