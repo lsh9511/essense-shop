@@ -21,6 +21,7 @@ TORTOISE_ORM = {
                 "app.models.inventory",
                 "app.models.order",
                 "app.models.order_item",
+                "app.models.cart",
                 "aerich.models",
             ],
             "default_connection": "default",

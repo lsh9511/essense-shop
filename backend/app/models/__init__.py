@@ -6,6 +6,7 @@ from .product_option import ProductOption
 from .inventory import Inventory
 from .order import Order, OrderStatus, ShippingStatus
 from .order_item import OrderItem
+from .cart import Cart, CartItem
 
 __all__ = [
     "User",
@@ -22,4 +23,6 @@ __all__ = [
     "OrderStatus",
     "ShippingStatus",
     "OrderItem",
+    "Cart",
+    "CartItem"
 ]
