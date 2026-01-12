@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .brand import Brand
+    from .product_image import ProductImage
 
 
 class ProductCategory(str, Enum):
@@ -60,6 +61,9 @@ class Product(Model):
     # 상태
     status = fields.CharEnumField(ProductStatus, default=ProductStatus.ACTIVE, index=True)
     view_count = fields.IntField(default=0)
+
+    # 역참조 (reverse relations) - Mypy를 위한 타입 어노테이션
+    images: fields.ReverseRelation["ProductImage"]
 
     # 타임스탬프
     created_at = fields.DatetimeField(auto_now_add=True)
