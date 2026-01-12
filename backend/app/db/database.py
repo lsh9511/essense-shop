@@ -26,6 +26,7 @@ TORTOISE_ORM = {
                 "app.models.address",
                 "app.models.wishlist",
                 "app.models.review",
+                "app.models.coupon",
                 "aerich.models",
             ],
             "default_connection": "default",

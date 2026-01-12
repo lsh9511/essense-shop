@@ -11,6 +11,7 @@ from .payment import Payment, PaymentStatus, PaymentMethod
 from .address import Address
 from .wishlist import Wishlist
 from .review import Review, ReviewImage, SizeSatisfaction
+from .coupon import Coupon, UserCoupon, DiscountType
 
 __all__ = [
     "User",
@@ -37,4 +38,7 @@ __all__ = [
     "Review",
     "ReviewImage",
     "SizeSatisfaction",
+    "UserCoupon",
+    "DiscountType",
+    "Coupon",
 ]
