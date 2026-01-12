@@ -12,6 +12,7 @@ from .address import Address
 from .wishlist import Wishlist
 from .review import Review, ReviewImage, SizeSatisfaction
 from .coupon import Coupon, UserCoupon, DiscountType
+from .return_request import ReturnRequest, ReturnType, ReturnStatus
 
 __all__ = [
     "User",
@@ -41,4 +42,7 @@ __all__ = [
     "UserCoupon",
     "DiscountType",
     "Coupon",
+    "ReturnType",
+    "ReturnStatus",
+    "ReturnRequest",
 ]
