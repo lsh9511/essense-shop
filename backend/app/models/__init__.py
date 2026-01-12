@@ -13,6 +13,7 @@ from .wishlist import Wishlist
 from .review import Review, ReviewImage, SizeSatisfaction
 from .coupon import Coupon, UserCoupon, DiscountType
 from .return_request import ReturnRequest, ReturnType, ReturnStatus
+from .notification import Notification, NotificationType
 
 __all__ = [
     "User",
@@ -45,4 +46,6 @@ __all__ = [
     "ReturnType",
     "ReturnStatus",
     "ReturnRequest",
+    "Notification",
+    "NotificationType",
 ]
