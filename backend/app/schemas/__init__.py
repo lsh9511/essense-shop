@@ -5,6 +5,7 @@ from .cart import CartItemCreate, CartItemUpdate, CartResponse, CartItemResponse
 from .order import OrderCreate, OrderItemCreate, OrderResponse, OrderItemResponse, OrderListResponse
 from .payment import PaymentResponse
 from .review import ReviewCreate, ReviewUpdate, ReviewResponse, ReviewListResponse
+from .wishlist import WishlistCreate, WishlistResponse
 
 __all__ = [
     "UserRegister",
@@ -33,4 +34,6 @@ __all__ = [
     "ReviewUpdate",
     "ReviewResponse",
     "ReviewListResponse",
+    "WishlistCreate",
+    "WishlistResponse",
 ]
