@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .user import User
+    from .order_item import OrderItem
 
 
 class OrderStatus(str, Enum):
@@ -38,6 +39,10 @@ class Order(Model):
     user: fields.ForeignKeyRelation["User"] = fields.ForeignKeyField(
         "models.User", related_name="orders", on_delete=fields.RESTRICT
     )
+
+    # 역참조: OrderItem
+    items: fields.ReverseRelation["OrderItem"]
+
     # 수령인 정보
     recipient_name = fields.CharField(max_length=50)
     recipient_phone = fields.CharField(max_length=20)
