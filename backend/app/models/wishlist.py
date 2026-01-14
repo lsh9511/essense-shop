@@ -16,10 +16,12 @@ class Wishlist(Model):
     user: fields.ForeignKeyRelation["User"] = fields.ForeignKeyField(
         "models.User", related_name="wishlists", on_delete=fields.OnDelete.CASCADE
     )
+    user_id: int
     # 외래키: Product와 관계
     product: fields.ForeignKeyRelation["Product"] = fields.ForeignKeyField(
         "models.Product", related_name="wishlists", on_delete=fields.OnDelete.CASCADE
     )
+    product_id: int
     # 타임스탬프
     created_at = fields.DatetimeField(auto_now_add=True)
 
