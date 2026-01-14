@@ -26,12 +26,15 @@ class Review(Model):
     user: fields.ForeignKeyRelation["User"] = fields.ForeignKeyField(
         "models.User", related_name="reviews", on_delete=fields.OnDelete.CASCADE
     )
+    user_id: int
     product: fields.ForeignKeyRelation["Product"] = fields.ForeignKeyField(
         "models.Product", related_name="reviews", on_delete=fields.OnDelete.CASCADE
     )
+    product_id: int
     order_item: fields.OneToOneRelation["OrderItem"] = fields.OneToOneField(
         "models.OrderItem", related_name="review", on_delete=fields.OnDelete.CASCADE
     )
+    order_item_id: int
 
     # 리뷰 내용
     rating = fields.IntField()

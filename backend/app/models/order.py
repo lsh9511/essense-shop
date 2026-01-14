@@ -39,6 +39,7 @@ class Order(Model):
     user: fields.ForeignKeyRelation["User"] = fields.ForeignKeyField(
         "models.User", related_name="orders", on_delete=fields.RESTRICT
     )
+    user_id: int
 
     # 역참조: OrderItem
     items: fields.ReverseRelation["OrderItem"]

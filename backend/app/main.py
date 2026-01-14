@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.db import init_db, close_db
-from app.routes import auth, users, brands, products, cart, orders, payments
+from app.routes import auth, users, brands, products, cart, orders, payments, reviews
 
 
 @asynccontextmanager
@@ -28,6 +28,7 @@ app.include_router(products.router)
 app.include_router(cart.router)
 app.include_router(orders.router)
 app.include_router(payments.router)
+app.include_router(reviews.router)
 
 
 @app.get("/")
