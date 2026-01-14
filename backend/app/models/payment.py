@@ -41,9 +41,10 @@ class Payment(Model):
     payment_key = fields.CharField(max_length=255, unique=True)
     payment_method = fields.CharEnumField(PaymentMethod)
     amount = fields.IntField()
+    pg_transaction_id = fields.CharField(max_length=255, null=True)
 
     # 상태
-    status = fields.CharEnumField(PaymentStatus, default=PaymentStatus.PENDING)
+    payment_status = fields.CharEnumField(PaymentStatus, default=PaymentStatus.PENDING)
 
     # 타임 스탬프
     paid_at = fields.DatetimeField(null=True)
